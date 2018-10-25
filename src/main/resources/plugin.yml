@@ -1,0 +1,4 @@
+name: VTuberEscape
+version: @version@
+main: pro.ikili.vtuberescape.VTuberEscape
+authors: [LinaTsukusu]
