@@ -2,3 +2,4 @@ name: VTuberEscape
 version: @version@
 main: pro.ikili.vtuberescape.VTuberEscape
 authors: [LinaTsukusu]
+api-version: 1.13
