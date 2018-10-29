@@ -7,7 +7,7 @@ import org.bukkit.inventory.meta.BookMeta
 import java.util.*
 
 class VTuberRadar(level: Int) : ItemStack(Material.WHITE_CONCRETE) {
-    private val levels = arrayOf(Material.WHITE_CONCRETE, Material.YELLOW_CONCRETE, Material.RED_CONCRETE)
+//    private val levels = arrayOf(Material.WHITE_CONCRETE, Material.YELLOW_CONCRETE, Material.RED_CONCRETE)
 
     init {
         this.type = levels[level]
@@ -22,16 +22,17 @@ class VTuberRadar(level: Int) : ItemStack(Material.WHITE_CONCRETE) {
         this.itemMeta = meta
     }
 
-    fun changeLevel(level: Int) {
-        this.type = levels[level]
-    }
-
 
     companion object {
+        private val levels = arrayOf(Material.WHITE_CONCRETE, Material.YELLOW_CONCRETE, Material.RED_CONCRETE)
         private val ITEM_RADARS = arrayOf(VTuberRadar(0), VTuberRadar(1), VTuberRadar(2))
 
         fun isSimilar(stack: ItemStack?): Boolean {
             return ITEM_RADARS.any {it.isSimilar(stack)}
+        }
+
+        fun changeLevel(item: ItemStack, level: Int) {
+            item.type = levels[level]
         }
     }
 }

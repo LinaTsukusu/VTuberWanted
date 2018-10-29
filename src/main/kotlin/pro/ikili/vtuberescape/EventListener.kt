@@ -6,6 +6,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerRespawnEvent
 
 
 class EventListener(private val plugin: VTuberEscape) : Listener {
@@ -30,25 +31,34 @@ class EventListener(private val plugin: VTuberEscape) : Listener {
             if (vtuberTeam.entries.contains(p.name)) {
                 return@scheduleSyncRepeatingTask
             }
-            val radars = p.inventory.contents.filter { VTuberRadar.isSimilar(it) }.map { it as VTuberRadar }
+            val radars = p.inventory.contents.filter { VTuberRadar.isSimilar(it) }
             val nearby = Bukkit.getOnlinePlayers().filter { vtuberTeam.entries.contains(it.name) }
                     .map { p.location.distance(it.location) }
-                    .max()
+                    .min()
             if (nearby is Double) {
                 when {
                     nearby <= 20.0 -> {
-                        radars.forEach { it.changeLevel(2) }
+                        radars.forEach { VTuberRadar.changeLevel(it, 2) }
                     }
                     nearby <= 50.0 -> {
-                        radars.map { it.changeLevel(1) }
+                        radars.forEach { VTuberRadar.changeLevel(it, 1) }
                     }
                     else -> {
-                        radars.map { it.changeLevel(0) }
+                        radars.forEach { VTuberRadar.changeLevel(it, 0) }
                     }
                 }
             }
         }, 0, 10L)
 
+    }
+
+    @EventHandler
+    fun giveRespawnPlayer(event: PlayerRespawnEvent) {
+        val p = event.player
+        val team = Bukkit.getScoreboardManager().mainScoreboard.getTeam("Listener")
+        if (team.entries.contains(p.name)) {
+            p.inventory.addItem(VTuberRadar(0))
+        }
     }
 
     @EventHandler
