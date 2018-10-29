@@ -8,7 +8,7 @@ class VTuberEscape : JavaPlugin() {
 
     override fun onEnable() {
         // Plugin startup logic
-        this.logger.info("Lina Tsukusu's Plugin!!!!!!!!!!!!!!!!")
+        this.logger.info("Loaded VTuber-Wanted")
         this.server.pluginManager.registerEvents(EventListener(this), this)
 
         val board = Bukkit.getScoreboardManager().mainScoreboard
@@ -20,6 +20,12 @@ class VTuberEscape : JavaPlugin() {
             val vtuber = board.registerNewTeam("VTuber")
             vtuber.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM)
         }
+
+        Bukkit.getWorld("world").setSpawnLocation(0, 70, 0)
+
+        val wb = Bukkit.getWorld("world").worldBorder
+        wb.setCenter(0.0, 0.0)
+        wb.size = 1000.0
 
     }
 
