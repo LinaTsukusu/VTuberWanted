@@ -13,12 +13,13 @@ class VTuberEscape : JavaPlugin() {
 
         val board = Bukkit.getScoreboardManager().mainScoreboard
         if (!board.teams.map { it.name }.contains("Listener")) {
-            board.registerNewTeam("Listener")
+            val team = board.registerNewTeam("Listener")
+            team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM)
         }
 
         if (!board.teams.map { it.name }.contains("VTuber")) {
-            val vtuber = board.registerNewTeam("VTuber")
-            vtuber.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM)
+            val team = board.registerNewTeam("VTuber")
+            team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM)
         }
 
         Bukkit.getWorld("world").setSpawnLocation(0, 70, 0)

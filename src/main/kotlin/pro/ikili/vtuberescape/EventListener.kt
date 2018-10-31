@@ -27,29 +27,7 @@ class EventListener(private val plugin: VTuberEscape) : Listener {
             board.getTeam("Listener").addEntry(p.name)
         }
 
-        plugin.server.scheduler.scheduleSyncRepeatingTask(plugin, {
-            if (vtuberTeam.entries.contains(p.name)) {
-                return@scheduleSyncRepeatingTask
-            }
-            val radars = p.inventory.contents.filter { VTuberRadar.isSimilar(it) }
-            val nearby = Bukkit.getOnlinePlayers().filter { vtuberTeam.entries.contains(it.name) }
-                    .map { p.location.distance(it.location) }
-                    .min()
-            if (nearby is Double) {
-                when {
-                    nearby <= 20.0 -> {
-                        radars.forEach { VTuberRadar.changeLevel(it, 2) }
-                    }
-                    nearby <= 50.0 -> {
-                        radars.forEach { VTuberRadar.changeLevel(it, 1) }
-                    }
-                    else -> {
-                        radars.forEach { VTuberRadar.changeLevel(it, 0) }
-                    }
-                }
-            }
-        }, 0, 10L)
-
+        RadarTask(p).runTaskTimer(plugin, 0, 10)
     }
 
     @EventHandler
@@ -68,8 +46,7 @@ class EventListener(private val plugin: VTuberEscape) : Listener {
 
     @EventHandler
     fun banDropVTuberRadar(event: PlayerDropItemEvent) {
-        val team = Bukkit.getScoreboardManager().mainScoreboard.getTeam("Listener")
-        event.isCancelled = VTuberRadar.isSimilar(event.itemDrop.itemStack) and team.entries.contains(event.player.name)
+        event.isCancelled = VTuberRadar.isSimilar(event.itemDrop.itemStack)
     }
 
 }
