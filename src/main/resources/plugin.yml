@@ -3,3 +3,10 @@ version: @version@
 main: pro.ikili.vtuberescape.VTuberEscape
 authors: [LinaTsukusu]
 api-version: 1.13
+
+commands:
+  vtuber-wanted:
+    description: VTuber Wanted Command
+    aliases:
+      - vt
+    usage: (start | reset)

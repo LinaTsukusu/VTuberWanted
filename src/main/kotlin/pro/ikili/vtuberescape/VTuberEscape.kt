@@ -9,6 +9,7 @@ class VTuberEscape : JavaPlugin() {
     override fun onEnable() {
         // Plugin startup logic
         this.logger.info("Loaded VTuber-Wanted")
+        getCommand("vtuber-wanted").executor = TestCommandExecutor(this)
         this.server.pluginManager.registerEvents(EventListener(this), this)
 
         val board = Bukkit.getScoreboardManager().mainScoreboard

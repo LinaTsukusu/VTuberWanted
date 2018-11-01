@@ -24,11 +24,11 @@ class RadarTask(private val player: Player): BukkitRunnable() {
                 .map { player.location.distance(it.location) }
                 .min()
         if (nearby is Double) {
-            when {
-                nearby <= 20.0 -> {
+            when (nearby) {
+                in 0..20 -> {
                     radars.forEach { VTuberRadar.changeLevel(it, 2) }
                 }
-                nearby <= 50.0 -> {
+                in 20..50 -> {
                     radars.forEach { VTuberRadar.changeLevel(it, 1) }
                 }
                 else -> {
