@@ -23,12 +23,13 @@ class RadarTask(private val player: Player): BukkitRunnable() {
         val nearby = Bukkit.getOnlinePlayers().filter { vtuberTeam.entries.contains(it.name) }
                 .map { player.location.distance(it.location) }
                 .min()
+        // TODO 範囲調整
         if (nearby is Double) {
             when (nearby) {
-                in 0..20 -> {
+                in 0..30 -> {
                     radars.forEach { VTuberRadar.changeLevel(it, 2) }
                 }
-                in 20..50 -> {
+                in 30..80 -> {
                     radars.forEach { VTuberRadar.changeLevel(it, 1) }
                 }
                 else -> {

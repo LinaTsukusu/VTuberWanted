@@ -9,4 +9,9 @@ commands:
     description: VTuber Wanted Command
     aliases:
       - vt
+    permission: vt
     usage: (start | reset)
+
+permissions:
+  vt.*:
+    default: op
