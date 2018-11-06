@@ -12,60 +12,40 @@ import java.lang.NumberFormatException
 class VTCommand(private val plugin: VTuberEscape) : CommandExecutor {
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
-        if (command.name == "vtuber-wanted") {
-            when (args[0]) {
-                "start" -> {
+        if (command.name == "vtuber-wanted") when (args[0]) {
+            "start" -> {
+                sender.sendMessage("start")
+                val board = Bukkit.getScoreboardManager().mainScoreboard
+                val vtuberTeam = board.getTeam("VTuber")
+                try {
+                    board.getObjective("death").unregister()
+                } catch (e: NullPointerException) {}
 
-                    val sec = try {
-                        args[1].toInt()
-                    } catch (e: NumberFormatException) {
-                        3600
-                    }
-                    sender.sendMessage("start")
-                    val board = Bukkit.getScoreboardManager().mainScoreboard
-                    val vtuberTeam = board.getTeam("VTuber")
-                    try {
-                        vtuberTeam.scoreboard.getObjective("death").unregister()
-                    } catch (e: NullPointerException) {}
-
-                    val death = vtuberTeam.scoreboard.registerNewObjective("death", Criterias.DEATHS, "VTuberList")
-                    death.displaySlot = DisplaySlot.SIDEBAR
-                    death.getScore("----Alive----").score = 0
-                    vtuberTeam.entries.forEach {
-                        death.getScore(it).score = 0
-                    }
-
-                    Bukkit.getOnlinePlayers().forEach {
-                        it.sendTitle("VTuber Wanted", "Start", 20, 2 * 20, 20)
-                    }
-
-                    val ready = 600
-                    TimerBar(plugin, ready).runTaskTimer(plugin, 0, 20)
-                    plugin.server.scheduler.scheduleSyncDelayedTask(plugin, {
-                        Bukkit.setWhitelist(false)
-                    }, ready * 20.toLong())
-
-                    plugin.server.scheduler.scheduleSyncDelayedTask(plugin, {
-                        Bukkit.getOnlinePlayers().forEach { it.sendTitle("VTuber Wanted", "Start", 20, 2 * 20, 20) }
-                    }, 200 + ready * 20.toLong())
-
-                    TimerBar(plugin, sec).runTaskTimer(plugin, ready * 20.toLong(), 20)
-                    plugin.server.scheduler.scheduleSyncDelayedTask(plugin, {
-                        Bukkit.getOnlinePlayers().forEach { it.sendTitle("VTuber Wanted", "Finish", 20, 2 * 20, 20) }
-                    }, ready * 20 + sec * 20.toLong())
-
-                    return true
-
+                val death = board.registerNewObjective("death", "main", "VTuberList")
+                death.displaySlot = DisplaySlot.SIDEBAR
+                death.getScore("----Alive----").score = 3
+                death.getScore("----Dead-----").score = 1
+                vtuberTeam.entries.forEach {
+                    death.getScore(it).score = 2
                 }
 
-                "reset" -> {
-                    sender.sendMessage("reset")
-                    return true
-                }
 
-                else -> {
+                val sec = try { args[1].toLong() } catch (e: Exception) { 1200L }
+                val ready = try { args[2].toLong() } catch(e: Exception) { 600L }
+                val interval = 30L
 
+                Bukkit.getOnlinePlayers().forEach {
+                    it.sendTitle("Preparation time", "$ready seconds", 20, 2 * 20, 20)
                 }
+                TimerBar(plugin, ready, "ready").runTaskTimer(plugin, 0, 20)
+                TimerBar(plugin, interval, "interval").runTaskTimer(plugin, interval * 20, 20)
+                TimerBar(plugin, sec, "main").runTaskTimer(plugin, interval * 20 + ready * 20, 20)
+
+                return true
+            }
+
+            else -> {
+
             }
         }
 

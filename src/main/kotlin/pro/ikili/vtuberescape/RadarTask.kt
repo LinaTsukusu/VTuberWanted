@@ -16,6 +16,12 @@ class RadarTask(private val player: Player): BukkitRunnable() {
         if (vtuberTeam.entries.contains(player.name)) {
             val inv = player.inventory
             VTuberRadar.ITEM_RADARS.forEach { inv.removeItem(it) }
+            if (player.isDead) {
+                val deathScore = Bukkit.getScoreboardManager().mainScoreboard.getObjective("death").getScore(player.name)
+                if (deathScore.score >= 2) {
+                    deathScore.score = 0
+                }
+            }
             return
         }
 
@@ -23,19 +29,18 @@ class RadarTask(private val player: Player): BukkitRunnable() {
         val nearby = Bukkit.getOnlinePlayers().filter { vtuberTeam.entries.contains(it.name) }
                 .map { player.location.distance(it.location) }
                 .min()
-        // TODO 範囲調整
-        if (nearby is Double) {
+
+        val level = if (nearby is Double) {
             when (nearby) {
-                in 0..30 -> {
-                    radars.forEach { VTuberRadar.changeLevel(it, 2) }
-                }
-                in 30..80 -> {
-                    radars.forEach { VTuberRadar.changeLevel(it, 1) }
-                }
-                else -> {
-                    radars.forEach { VTuberRadar.changeLevel(it, 0) }
-                }
+                in 0..48 -> 3
+                in 48..128 -> 2
+                in 128..256 -> 1
+                else -> 0
             }
+        } else {
+            0
         }
+
+        radars.forEach { VTuberRadar.changeLevel(it, level) }
     }
 }

@@ -4,8 +4,7 @@ import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scoreboard.Team
 
-// TODO 調整: レーダー性能 試合時間 ボーダー範囲
-// TODO 治す: スコアボード
+
 class VTuberEscape : JavaPlugin() {
 
     override fun onEnable() {
@@ -16,7 +15,7 @@ class VTuberEscape : JavaPlugin() {
 
         val board = Bukkit.getScoreboardManager().mainScoreboard
         if (!board.teams.asSequence().map { it.name }.contains("Listener")) {
-            val team = board.registerNewTeam("Listener")
+            board.registerNewTeam("Listener")
 //            team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM)
         }
 
@@ -29,11 +28,14 @@ class VTuberEscape : JavaPlugin() {
 
         val wb = Bukkit.getWorld("world").worldBorder
         wb.setCenter(0.0, 0.0)
-        wb.size = 1000.0
+        wb.size = 750.0
 
     }
 
     override fun onDisable() {
         // Plugin shutdown logic
+        val board = Bukkit.getScoreboardManager().mainScoreboard
+        board.getTeam("Listener").unregister()
+        board.getTeam("VTuber").unregister()
     }
 }
