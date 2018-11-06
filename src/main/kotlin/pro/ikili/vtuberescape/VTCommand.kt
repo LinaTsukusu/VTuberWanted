@@ -38,7 +38,7 @@ class VTCommand(private val plugin: VTuberEscape) : CommandExecutor {
                     it.sendTitle("Preparation time", "$ready seconds", 20, 2 * 20, 20)
                 }
                 TimerBar(plugin, ready, "ready").runTaskTimer(plugin, 0, 20)
-                TimerBar(plugin, interval, "interval").runTaskTimer(plugin, interval * 20, 20)
+                TimerBar(plugin, interval, "interval").runTaskTimer(plugin, ready * 20, 20)
                 TimerBar(plugin, sec, "main").runTaskTimer(plugin, interval * 20 + ready * 20, 20)
 
                 return true

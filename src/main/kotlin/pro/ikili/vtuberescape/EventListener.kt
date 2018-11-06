@@ -55,13 +55,13 @@ class EventListener(private val plugin: VTuberEscape) : Listener {
     fun onUseVTuberRadar(event: PlayerInteractEvent) {
         val act = event.action
         if (VTuberRadar.isSimilar(event.item) && (act == Action.RIGHT_CLICK_AIR || act == Action.RIGHT_CLICK_BLOCK)) {
-            val radar = event.item as VTuberRadar
-            if (radar.level >= 2) {
-                val p = event.player
+            val level = VTuberRadar.ITEM_RADARS.indexOfFirst { it.isSimilar(event.item) }
+            val p = event.player
+            if (level >= 2 && !ItemCooldownUtil.inCooldown(p, VTuberRadar.ITEM_RADARS[level].type)) {
                 val color = arrayOf("白", "緑", "${ChatColor.YELLOW}黄", "${ChatColor.RED}赤")
                 val loc = p.location
-                p.chat("${color[radar.level]}${ChatColor.RESET} at X:${loc.blockX} / Y:${loc.blockY} / Z:${loc.blockZ}")
-                ItemCooldownUtil.setCooldown(p, radar.type, 15 * 20)
+                p.chat("${color[level]}${ChatColor.RESET} at X:${loc.blockX} / Y:${loc.blockY} / Z:${loc.blockZ}")
+                ItemCooldownUtil.setCooldown(p, VTuberRadar.ITEM_RADARS[level].type, 15 * 20)
             }
         }
     }

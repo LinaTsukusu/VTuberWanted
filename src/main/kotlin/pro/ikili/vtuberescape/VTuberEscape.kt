@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scoreboard.Team
 
 
+// TODO 全員石ツール一式 -> 準備5分くらいに
 class VTuberEscape : JavaPlugin() {
 
     override fun onEnable() {
@@ -28,7 +29,7 @@ class VTuberEscape : JavaPlugin() {
 
         val wb = Bukkit.getWorld("world").worldBorder
         wb.setCenter(0.0, 0.0)
-        wb.size = 750.0
+        wb.size = 500.0
 
     }
 
