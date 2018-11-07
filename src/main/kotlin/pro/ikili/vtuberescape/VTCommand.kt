@@ -1,9 +1,11 @@
 package pro.ikili.vtuberescape
 
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
+import org.bukkit.inventory.ItemStack
 import org.bukkit.scoreboard.Criterias
 import org.bukkit.scoreboard.DisplaySlot
 import java.lang.NullPointerException
@@ -20,6 +22,19 @@ class VTCommand(private val plugin: VTuberEscape) : CommandExecutor {
                 try {
                     board.getObjective("death").unregister()
                 } catch (e: NullPointerException) {}
+
+                Bukkit.getOnlinePlayers().forEach {
+                    it.inventory.addItem(
+                            ItemStack(Material.STONE_PICKAXE, 1), ItemStack(Material.STONE_AXE, 1),
+                            ItemStack(Material.STONE_SWORD, 1), ItemStack(Material.STONE_SHOVEL, 1),
+                            ItemStack(Material.COOKED_BEEF, 10)
+                    )
+                    if (!vtuberTeam.hasEntry(it.name)) {
+                        it.inventory.addItem(ItemStack(Material.DIAMOND_HELMET, 1))
+                    } else {
+                        it.inventory.addItem(ItemStack(Material.ENCHANTED_GOLDEN_APPLE, 1))
+                    }
+                }
 
                 val death = board.registerNewObjective("death", "main", "VTuberList")
                 death.displaySlot = DisplaySlot.SIDEBAR

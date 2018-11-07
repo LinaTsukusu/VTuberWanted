@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
@@ -18,12 +19,10 @@ class EventListener(private val plugin: VTuberEscape) : Listener {
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         val p = event.player
-        p.sendMessage("よ!")
         plugin.logger.info("join ${p.name}")
         if (!p.inventory.contents.any { VTuberRadar.isSimilar(it) }) {
             p.inventory.addItem(VTuberRadar(0))
         }
-
         val board = Bukkit.getScoreboardManager().mainScoreboard
         val vtuberTeam = board.getTeam("VTuber")
         val listenerTeam = board.getTeam("Listener")
@@ -42,7 +41,20 @@ class EventListener(private val plugin: VTuberEscape) : Listener {
             p.inventory.addItem(VTuberRadar(0))
         } else {
             team.addEntry(p.name)
-            p.gameMode = GameMode.SPECTATOR
+//            p.gameMode = GameMode.SPECTATOR
+        }
+    }
+
+    @EventHandler
+    fun deathMessage(event: PlayerDeathEvent) {
+        val vtuberTeam = Bukkit.getScoreboardManager().mainScoreboard.getTeam("VTuber")
+        val player = event.entity
+        if (vtuberTeam.entries.contains(player.name)) {
+            player.gameMode = GameMode.SPECTATOR
+            val deathScore = Bukkit.getScoreboardManager().mainScoreboard.getObjective("death").getScore(player.name)
+            if (deathScore.score >= 2) {
+                deathScore.score = 0
+            }
         }
     }
 

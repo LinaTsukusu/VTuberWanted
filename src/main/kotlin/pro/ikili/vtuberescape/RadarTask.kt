@@ -16,12 +16,6 @@ class RadarTask(private val player: Player): BukkitRunnable() {
         if (vtuberTeam.entries.contains(player.name)) {
             val inv = player.inventory
             VTuberRadar.ITEM_RADARS.forEach { inv.removeItem(it) }
-            if (player.isDead) {
-                val deathScore = Bukkit.getScoreboardManager().mainScoreboard.getObjective("death").getScore(player.name)
-                if (deathScore.score >= 2) {
-                    deathScore.score = 0
-                }
-            }
             return
         }
 
