@@ -85,20 +85,20 @@ class EventListener(private val plugin: VTuberEscape) : Listener {
                 ItemCooldownUtil.setCooldown(p, VTuberRadar.ITEM_RADARS[level].type, 15 * 20)
 
                 // 花火
-                val fw = p.world.spawnEntity(Location(p.world, p.location.x, 120.0, p.location.z), EntityType.FIREWORK) as Firework
+                val fw = p.world.spawnEntity(Location(p.world, p.location.x, 100.0, p.location.z), EntityType.FIREWORK) as Firework
                 val fwm = fw.fireworkMeta
-                fwm.power = 2
                 val fwColor = if (level == 2) {
                     Color.YELLOW
                 } else {
                     Color.RED
                 }
                 fwm.addEffect(FireworkEffect.builder()
-                        .withColor(fwColor).flicker(true).build()
+                        .withColor(fwColor).with(FireworkEffect.Type.BALL_LARGE).withFlicker().build()
                 )
+                fwm.power = 1
 
                 fw.fireworkMeta = fwm
-                fw.detonate()
+//                fw.detonate()
             }
         }
     }
@@ -113,9 +113,9 @@ class EventListener(private val plugin: VTuberEscape) : Listener {
         when (event.name) {
             "main" -> {
                 if (event.remaining == 0L) {
-                    Bukkit.getOnlinePlayers().forEach { it.sendTitle("VTuber WIN!", "Congratulation!", 20, 2 * 20, 20) }
+                    Bukkit.getOnlinePlayers().forEach { it.sendTitle("${ChatColor.RED}VTuber${ChatColor.RESET} WIN!", "Congratulation!", 20, 2 * 20, 20) }
                 } else {
-                    Bukkit.getOnlinePlayers().forEach { it.sendTitle("Listener WIN!", "Congratulation!", 20, 2 * 20, 20) }
+                    Bukkit.getOnlinePlayers().forEach { it.sendTitle("${ChatColor.BLUE}Listener${ChatColor.RESET} WIN!", "Congratulation!", 20, 2 * 20, 20) }
                 }
             }
 
@@ -124,8 +124,8 @@ class EventListener(private val plugin: VTuberEscape) : Listener {
                     Bukkit.setWhitelist(false)
                     plugin.server.worlds.forEach { it.time = 0 }
                     Bukkit.getOnlinePlayers().forEach {
-                        it.sendTitle("Whitelist解除", "", 20, 2 * 20, 20)
-                    }
+                        it.sendTitle("Whitelist 解除", "", 20, 2 * 20, 20)
+                }
                 }
             }
 

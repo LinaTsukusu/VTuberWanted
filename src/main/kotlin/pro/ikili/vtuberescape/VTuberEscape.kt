@@ -6,7 +6,6 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scoreboard.Team
 
 
-// TODO 全員石ツール一式 -> 準備5分くらいに
 class VTuberEscape : JavaPlugin() {
     val timers: MutableMap<String, TimerBar> = mutableMapOf()
 
