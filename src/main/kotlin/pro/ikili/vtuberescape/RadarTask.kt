@@ -26,9 +26,9 @@ class RadarTask(private val player: Player): BukkitRunnable() {
 
         val level = if (nearby is Double) {
             when (nearby) {
-                in 0..48 -> 3
-                in 48..128 -> 2
-                in 128..256 -> 1
+                in 0..40 -> 3
+                in 40..100 -> 2
+                in 100..200 -> 1
                 else -> 0
             }
         } else {

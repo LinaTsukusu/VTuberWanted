@@ -1,6 +1,7 @@
 package pro.ikili.vtuberescape
 
 import org.bukkit.Bukkit
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -17,23 +18,25 @@ class VTCommand(private val plugin: VTuberEscape) : CommandExecutor {
         if (command.name == "vtuber-wanted") when (args[0]) {
             "start" -> {
                 sender.sendMessage("start")
+
+                val wb = Bukkit.getWorld("world").worldBorder
+                wb.setCenter(0.0, 0.0)
+                wb.size = 500.0
+
                 val board = Bukkit.getScoreboardManager().mainScoreboard
                 val vtuberTeam = board.getTeam("VTuber")
+
                 try {
                     board.getObjective("death").unregister()
                 } catch (e: NullPointerException) {}
 
-                Bukkit.getOnlinePlayers().forEach {
+                Bukkit.getOnlinePlayers().filter{ vtuberTeam.hasEntry(it.name) }.forEach {
                     it.inventory.addItem(
-                            ItemStack(Material.STONE_PICKAXE, 1), ItemStack(Material.STONE_AXE, 1),
-                            ItemStack(Material.STONE_SWORD, 1), ItemStack(Material.STONE_SHOVEL, 1),
-                            ItemStack(Material.COOKED_BEEF, 10)
+                            ItemStack(Material.IRON_PICKAXE, 1), ItemStack(Material.IRON_AXE, 1),
+                            ItemStack(Material.IRON_SWORD, 1), ItemStack(Material.IRON_SHOVEL, 1),
+                            ItemStack(Material.COOKED_BEEF, 12),
+                            ItemStack(Material.ENCHANTED_GOLDEN_APPLE, 1)
                     )
-                    if (!vtuberTeam.hasEntry(it.name)) {
-                        it.inventory.addItem(ItemStack(Material.DIAMOND_HELMET, 1))
-                    } else {
-                        it.inventory.addItem(ItemStack(Material.ENCHANTED_GOLDEN_APPLE, 1))
-                    }
                 }
 
                 val death = board.registerNewObjective("death", "main", "VTuberList")
@@ -52,6 +55,7 @@ class VTCommand(private val plugin: VTuberEscape) : CommandExecutor {
                 Bukkit.getOnlinePlayers().forEach {
                     it.sendTitle("Preparation time", "$ready seconds", 20, 2 * 20, 20)
                 }
+
                 TimerBar(plugin, ready, "ready").runTaskTimer(plugin, 0, 20)
                 TimerBar(plugin, interval, "interval").runTaskTimer(plugin, ready * 20, 20)
                 TimerBar(plugin, sec, "main").runTaskTimer(plugin, interval * 20 + ready * 20, 20)

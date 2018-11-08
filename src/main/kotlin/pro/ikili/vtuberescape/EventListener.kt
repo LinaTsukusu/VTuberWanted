@@ -1,8 +1,8 @@
 package pro.ikili.vtuberescape
 
-import org.bukkit.Bukkit
-import org.bukkit.ChatColor
-import org.bukkit.GameMode
+import org.bukkit.*
+import org.bukkit.entity.EntityType
+import org.bukkit.entity.Firework
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerRespawnEvent
+import org.bukkit.inventory.ItemStack
 
 
 class EventListener(private val plugin: VTuberEscape) : Listener {
@@ -37,7 +38,7 @@ class EventListener(private val plugin: VTuberEscape) : Listener {
     fun giveRespawnPlayer(event: PlayerRespawnEvent) {
         val p = event.player
         val team = Bukkit.getScoreboardManager().mainScoreboard.getTeam("Listener")
-        if (team.entries.contains(p.name)) {
+        if (team.hasEntry(p.name)) {
             p.inventory.addItem(VTuberRadar(0))
         } else {
             team.addEntry(p.name)
@@ -47,13 +48,21 @@ class EventListener(private val plugin: VTuberEscape) : Listener {
 
     @EventHandler
     fun deathMessage(event: PlayerDeathEvent) {
-        val vtuberTeam = Bukkit.getScoreboardManager().mainScoreboard.getTeam("VTuber")
-        val player = event.entity
-        if (vtuberTeam.entries.contains(player.name)) {
-            player.gameMode = GameMode.SPECTATOR
-            val deathScore = Bukkit.getScoreboardManager().mainScoreboard.getObjective("death").getScore(player.name)
-            if (deathScore.score >= 2) {
-                deathScore.score = 0
+        val timer = plugin.timers["main"]
+        if (timer !== null) {
+            val vtuberTeam = Bukkit.getScoreboardManager().mainScoreboard.getTeam("VTuber")
+            val listenerTeam = Bukkit.getScoreboardManager().mainScoreboard.getTeam("Listener")
+            val player = event.entity
+            if (vtuberTeam.hasEntry(player.name)) {
+                player.gameMode = GameMode.SPECTATOR
+                listenerTeam.addEntry(player.name)
+                val deathScore = Bukkit.getScoreboardManager().mainScoreboard.getObjective("death").getScore(player.name)
+                if (deathScore.score >= 2) {
+                    deathScore.score = 0
+                }
+                if (vtuberTeam.entries.isEmpty()) {
+                    timer.cancel()
+                }
             }
         }
     }
@@ -74,6 +83,22 @@ class EventListener(private val plugin: VTuberEscape) : Listener {
                 val loc = p.location
                 p.chat("${color[level]}${ChatColor.RESET} at X:${loc.blockX} / Y:${loc.blockY} / Z:${loc.blockZ}")
                 ItemCooldownUtil.setCooldown(p, VTuberRadar.ITEM_RADARS[level].type, 15 * 20)
+
+                // 花火
+                val fw = p.world.spawnEntity(Location(p.world, p.location.x, 120.0, p.location.z), EntityType.FIREWORK) as Firework
+                val fwm = fw.fireworkMeta
+                fwm.power = 2
+                val fwColor = if (level == 2) {
+                    Color.YELLOW
+                } else {
+                    Color.RED
+                }
+                fwm.addEffect(FireworkEffect.builder()
+                        .withColor(fwColor).flicker(true).build()
+                )
+
+                fw.fireworkMeta = fwm
+                fw.detonate()
             }
         }
     }
@@ -87,23 +112,36 @@ class EventListener(private val plugin: VTuberEscape) : Listener {
     fun onEndTimer(event: TimerEndEvent) {
         when (event.name) {
             "main" -> {
-                plugin.server.scheduler.scheduleSyncDelayedTask(plugin, {
-                    Bukkit.getOnlinePlayers().forEach { it.sendTitle("VTuber Wanted", "Finish", 20, 2 * 20, 20) }
-                }, 0)
+                if (event.remaining == 0L) {
+                    Bukkit.getOnlinePlayers().forEach { it.sendTitle("VTuber WIN!", "Congratulation!", 20, 2 * 20, 20) }
+                } else {
+                    Bukkit.getOnlinePlayers().forEach { it.sendTitle("Listener WIN!", "Congratulation!", 20, 2 * 20, 20) }
+                }
             }
 
             "ready" -> {
-                plugin.server.scheduler.scheduleSyncDelayedTask(plugin, {
+                if (event.remaining == 0L) {
                     Bukkit.setWhitelist(false)
-                }, 0)
-                plugin.server.worlds.forEach { it.time = 0 }
-
+                    plugin.server.worlds.forEach { it.time = 0 }
+                    Bukkit.getOnlinePlayers().forEach {
+                        it.sendTitle("Whitelist解除", "", 20, 2 * 20, 20)
+                    }
+                }
             }
 
             "interval" -> {
-                plugin.server.scheduler.scheduleSyncDelayedTask(plugin, {
+                if (event.remaining == 0L) {
+                    val team = Bukkit.getScoreboardManager().mainScoreboard.getTeam("Listener")
+                    Bukkit.getOnlinePlayers().filter { team.hasEntry(it.name) }.forEach {
+                        it.inventory.addItem(
+                                ItemStack(Material.DIAMOND_PICKAXE, 1), ItemStack(Material.IRON_AXE, 1),
+                                ItemStack(Material.IRON_SWORD, 1), ItemStack(Material.IRON_SHOVEL, 1),
+                                ItemStack(Material.COOKED_BEEF, 12), ItemStack(Material.OAK_LOG, 64),
+                                ItemStack(Material.DIAMOND_HELMET, 1)
+                        )
+                    }
                     Bukkit.getOnlinePlayers().forEach { it.sendTitle("VTuber Wanted", "Start", 20, 2 * 20, 20) }
-                }, 0)
+                }
             }
         }
     }

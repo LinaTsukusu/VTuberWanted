@@ -8,6 +8,7 @@ import org.bukkit.scoreboard.Team
 
 // TODO 全員石ツール一式 -> 準備5分くらいに
 class VTuberEscape : JavaPlugin() {
+    val timers: MutableMap<String, TimerBar> = mutableMapOf()
 
     override fun onEnable() {
         // Plugin startup logic
@@ -29,11 +30,6 @@ class VTuberEscape : JavaPlugin() {
         this.server.worlds.forEach { it.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false) }
 
         Bukkit.getWorld("world").setSpawnLocation(0, 90, 0)
-
-        val wb = Bukkit.getWorld("world").worldBorder
-        wb.setCenter(0.0, 0.0)
-        wb.size = 500.0
-
     }
 
     override fun onDisable() {

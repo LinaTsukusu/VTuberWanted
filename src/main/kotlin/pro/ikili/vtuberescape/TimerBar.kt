@@ -12,13 +12,12 @@ class TimerBar(plugin: VTuberEscape, private val sec: Long, private val name: St
     init {
         bar.removeAll()
         bar.isVisible = true
+        plugin.timers[name] = this
     }
 
     override fun run() {
         if (limit <= 0) {
-            bar.removeAll()
             this.cancel()
-            Bukkit.getPluginManager().callEvent(TimerEndEvent(name))
             return
         }
 
@@ -28,6 +27,19 @@ class TimerBar(plugin: VTuberEscape, private val sec: Long, private val name: St
         val s = String.format("%02d", limit % 60)
         bar.title = "$h:$m:$s"
         bar.progress = limit / sec.toDouble()
+
+        if (limit <= 5) {
+            Bukkit.getOnlinePlayers().forEach {
+                it.sendTitle("$limit", "", 5, 20, 5)
+            }
+        }
+
         limit--
+    }
+
+    override fun cancel() {
+        super.cancel()
+        bar.removeAll()
+        Bukkit.getPluginManager().callEvent(TimerEndEvent(name, limit))
     }
 }
