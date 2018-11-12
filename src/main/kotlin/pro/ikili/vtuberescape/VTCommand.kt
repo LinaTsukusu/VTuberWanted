@@ -6,13 +6,14 @@ import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
+import org.bukkit.command.TabCompleter
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scoreboard.Criterias
 import org.bukkit.scoreboard.DisplaySlot
 import java.lang.NullPointerException
 import java.lang.NumberFormatException
 
-class VTCommand(private val plugin: VTuberEscape) : CommandExecutor {
+class VTCommand(private val plugin: VTuberEscape) : CommandExecutor, TabCompleter {
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
         if (command.name == "vtuber-wanted") when (args[0]) {
@@ -28,7 +29,7 @@ class VTCommand(private val plugin: VTuberEscape) : CommandExecutor {
 
                 try {
                     board.getObjective("death").unregister()
-                } catch (e: NullPointerException) {}
+                } catch (e: Exception) {}
 
                 Bukkit.getOnlinePlayers().filter{ vtuberTeam.hasEntry(it.name) }.forEach {
                     it.inventory.addItem(
@@ -63,6 +64,10 @@ class VTCommand(private val plugin: VTuberEscape) : CommandExecutor {
                 return true
             }
 
+            "stop" -> {
+                plugin.timers.forEach { _, timer -> timer.cancel() }
+            }
+
             else -> {
 
             }
@@ -70,5 +75,17 @@ class VTCommand(private val plugin: VTuberEscape) : CommandExecutor {
 
         return false
     }
+
+    override fun onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array<String>)
+            : MutableList<String> {
+        if (command.name == "vtuber-wanted") when (args.size) {
+            1 -> {
+
+            }
+
+        }
+        return mutableListOf("", "")
+    }
+
 
 }

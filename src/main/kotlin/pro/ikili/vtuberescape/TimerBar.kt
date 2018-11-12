@@ -5,7 +5,7 @@ import org.bukkit.boss.BarColor
 import org.bukkit.boss.BarStyle
 import org.bukkit.scheduler.BukkitRunnable
 
-class TimerBar(plugin: VTuberEscape, private val sec: Long, private val name: String) : BukkitRunnable() {
+class TimerBar(private val plugin: VTuberEscape, private val sec: Long, private val name: String) : BukkitRunnable() {
     private val bar = plugin.server.createBossBar("time", BarColor.PURPLE, BarStyle.SOLID)
     private var limit = sec
 
@@ -40,6 +40,7 @@ class TimerBar(plugin: VTuberEscape, private val sec: Long, private val name: St
     override fun cancel() {
         super.cancel()
         bar.removeAll()
+        plugin.timers.remove(name)
         Bukkit.getPluginManager().callEvent(TimerEndEvent(name, limit))
     }
 }
