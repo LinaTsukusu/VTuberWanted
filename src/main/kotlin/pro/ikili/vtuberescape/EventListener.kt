@@ -42,7 +42,7 @@ class EventListener(private val plugin: VTuberEscape) : Listener {
             p.inventory.addItem(VTuberRadar(0))
         } else {
             team.addEntry(p.name)
-//            p.gameMode = GameMode.SPECTATOR
+            p.gameMode = GameMode.SPECTATOR
         }
     }
 
@@ -53,6 +53,12 @@ class EventListener(private val plugin: VTuberEscape) : Listener {
             val vtuberTeam = Bukkit.getScoreboardManager().mainScoreboard.getTeam("VTuber")
             val listenerTeam = Bukkit.getScoreboardManager().mainScoreboard.getTeam("Listener")
             val player = event.entity
+            val killer = player.killer
+            if (vtuberTeam.hasEntry(player.name) && vtuberTeam.hasEntry(killer.name)
+                || listenerTeam.hasEntry(player.name) && listenerTeam.hasEntry(killer.name)) {
+                killer.sendTitle("${ChatColor.RED}あら､仲間をキルしましたね...", "", 10, 4 * 20, 10)
+            }
+
             if (vtuberTeam.hasEntry(player.name)) {
                 player.gameMode = GameMode.SPECTATOR
                 listenerTeam.addEntry(player.name)
@@ -113,9 +119,9 @@ class EventListener(private val plugin: VTuberEscape) : Listener {
         when (event.name) {
             "main" -> {
                 if (event.remaining == 0L) {
-                    Bukkit.getOnlinePlayers().forEach { it.sendTitle("${ChatColor.RED}VTuber${ChatColor.RESET} WIN!", "Congratulation!", 20, 2 * 20, 20) }
+                    Bukkit.getOnlinePlayers().forEach { it.sendTitle("${ChatColor.RED}VTuber${ChatColor.RESET} WIN!", "やった!やった!今夜はドン勝だ!", 20, 2 * 20, 20) }
                 } else {
-                    Bukkit.getOnlinePlayers().forEach { it.sendTitle("${ChatColor.BLUE}Listener${ChatColor.RESET} WIN!", "Congratulation!", 20, 2 * 20, 20) }
+                    Bukkit.getOnlinePlayers().forEach { it.sendTitle("${ChatColor.BLUE}Listener${ChatColor.RESET} WIN!", "やった!やった!今夜はドン勝だ!", 20, 2 * 20, 20) }
                 }
             }
 
